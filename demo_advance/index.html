@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>上网欢迎页（事例）</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <script type='text/javascript' src='jquery.eraser.js'></script>
+<style>
+    /*此DEMO适合0基础用户使用，只需替换图片及文字即可*/
+html,body{
+    background-color:#ededed;/*定义背景颜色*/
+    height:100%;padding:0;margin:0;
+    font-family: "Microsoft Yahei",Helvetica,Arial,sans-serif;
+}
+p{padding: 0;margin: 0;}
+a {text-decoration: none;}
+img{display:block;border:none;width: 100%;}
+
+/* logo */
+.logo{
+    width:150px;/*定义LOGO宽度*/
+    padding:10px;
+}
+/* container */
+.container{max-width:720px;margin: auto;}
+.main {position: relative;}
+.main img {width: 100%;}
+.btn-bar{
+    position: absolute;
+    bottom: 0;
+    text-align: center;/*设置按钮排版对齐方式 可选参数 left、center、right*/
+    padding:0 10px;
+}
+/*定义按钮样式*/
+.btn{
+    background-color: #2eb3e8;/*定义按钮颜色*/
+    color:#ffffff;/*定义按钮文字颜色*/
+	font-size: 18px;/*定义按钮文字大小*/
+	padding:10px 20px;
+    border:none;
+    display: block;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+}
+    .text-area {
+        font-size: 18px;
+        color: #666;
+        line-height: 1.5em;
+        padding: 10px;
+        text-align: center;
+    }
+    .title {
+        font-size: 24px;
+        padding-bottom:25px;
+        color: #333;
+        text-align: center;
+    }
+
+
+    #robot {
+
+        top: 0px;
+        left: 0px;
+        z-index: 1;
+    }
+    #redux {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        z-index: 2;
+    }
+    .text {position: absolute;top:60px;text-align: center;width: 100%;color: #000;z-index: 9;font-size: 20px;}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="main">
+        <img id="redux" src="p1.png" /><!--虚化图片-->
+        <img id="robot" src="p2.png" /><!--底图-->
+    </div>
+    <div class="text-area">
+        <p class="title">欢迎光临XXX店</p>
+        <p style="color:#f09600">擦出上面图层即可上网</p>
+        <p>营业时间：9:00--21:00</p>
+        <p>电话：18888888888</p>
+    </div>
+
+</div>
+<script type="text/javascript">
+    var tourl = "http://www.hiwifi.com";//自定义跳转网页地址
+    var wList = "captive.apple.com;generate_".split(";");//跳过手机检查网络联通性的默认网址
+    function GetRequest() {
+        var url = location.search;
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for(var i = 0; i < strs.length; i ++) {
+                theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+
+    var Request = new Object();
+    Request = GetRequest();
+    var url = Request['url'];
+    function online(){
+        var findwl = false;
+        if(url){
+            for(var i=0;i<wList.length;i++){
+                if(url.indexOf(wList[i])>-1){
+                    findwl = true;
+                    break;
+                }
+            }
+        }
+        if(!findwl){
+            tourl = url;
+        }
+        $.ajax({
+            type:'post',
+            url:'http://portal.hiwifi.com/auth/add',
+            success:function(){
+                top.window.location=tourl;
+            }
+        })
+    }
+    var w = $('.main').width();
+    $('#redux').css({"width":w+'px'})
+
+    addEventListener( "load", init, false );
+    function init( event ) {
+        $("#redux").eraser({completeFunction:function(){
+            online()
+        }});
+    }
+    function reset(event) {
+        $("#redux").eraser('clear');
+        event.preventDefault();
+    }
+    function grow(event) {
+        $("#redux").eraser("size",150);		/* 橡皮擦大小 */
+        event.preventDefault();
+    }
+</script>
+
+</body>
+</html>
